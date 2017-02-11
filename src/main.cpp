@@ -3,12 +3,15 @@
 #include <iostream>
 #include "SDL.h"
 
-//#define GLEW_STATIC
 #include <GL/glew.h>
+#include "gfx/scene.hpp"
+#include "gfx/object.hpp"
 
 SDL_Window *mainWindow;
 
-SDL_Renderer* renderer;
+SDL_GLContext mainContext;
+
+gfx::Scene scene;
 
 // taken from http://headerphile.com/sdl2/opengl-part-1-sdl-opengl-awesome/
 
@@ -43,12 +46,9 @@ bool SetOpenGLAttributes()
 	// SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions are disabled
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-	// 3.2 is part of the modern versions of OpenGL, but most video cards whould be able to run it
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-	// Turn on double buffering with a 24bit Z buffer.
-	// You may need to change this to 16 or 32 for your system
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	return true;
@@ -72,7 +72,8 @@ bool Init()
 		return false;
 	}
 
-	renderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED);
+
+	mainContext = SDL_GL_CreateContext(mainWindow);
 
 	SetOpenGLAttributes();
 
@@ -86,6 +87,7 @@ bool Init()
 	glewInit();
 #endif
 
+	return true;
 }
 
 void Run()
@@ -95,6 +97,7 @@ void Run()
 	while (loop)
 	{
 		SDL_Event event;
+
 		while (SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_QUIT)
@@ -107,53 +110,45 @@ void Run()
 				case SDLK_ESCAPE:
 					loop = false;
 					break;
-				case SDLK_r:
-					// Cover with red and update
-					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-					SDL_RenderClear(renderer);
-					break;
-				case SDLK_g:
-					// Cover with green and update
-					SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-					SDL_RenderClear(renderer);
-					break;
-				case SDLK_b:
-					// Cover with blue and update
-					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-					SDL_RenderClear(renderer);
-					break;
-				default:
-					break;
 				}
 			}
-
-			SDL_RenderPresent(renderer);
 		}
+
+		scene.render();
+
+		SDL_GL_SwapWindow(mainWindow);
 	}
 }
 
 void Cleanup()
 {
-	SDL_DestroyRenderer(renderer);
-	// Destroy our window
+	SDL_GL_DeleteContext(mainContext);
+
 	SDL_DestroyWindow(mainWindow);
 
-	// Shutdown SDL 2
 	SDL_Quit();
+}
+
+void Load()
+{
+	auto shader = gfx::createShader("../data/shaders/simple.vertex", "../data/shaders/simple.fragment");
+	auto obj = gfx::createCube();
+	obj->setShader(shader);
+	auto node = gfx::createNode();
+	scene.addNodeAndX(node, obj);
 }
 
 int SDL_main(int argc, char *argv[])
 {
-	Eigen::Matrix4f mat = Eigen::Matrix4f::Identity();
-	Eigen::Vector4f vec(1.0f, 2.0f, 3.0f, 4.0f);
-	vec = 2 * mat * vec;
-	std::cout << vec;
-
 	if (!Init())
 	{
 		std::cout << "Could not init\n";
 		return 1;
 	}
+
+	PrintSDL_GL_Attributes();
+
+	Load();
 
 	Run();
 
