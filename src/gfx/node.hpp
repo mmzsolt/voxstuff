@@ -25,6 +25,12 @@ namespace gfx
 		void setRotation(const Eigen::Quaternionf& rot) { m_rot = rot; }
 		const Eigen::Quaternionf& getRotation() const { return m_rot; }
 
+		void rotateBy(const Eigen::Quaternionf& rot) { m_rot *= rot; }
+		void rotateBy(const Eigen::Vector3f& axis, float angle) { Eigen::AngleAxisf rot(angle, axis); m_rot = m_rot * rot; }
+		void rotateAroundX(float radians) { rotateBy({ 1.0f, 0.0f, 0.0f }, radians); }
+		void rotateAroundY(float radians) { rotateBy({ 0.0f, 1.0f, 0.0f }, radians); }
+		void rotateAroundZ(float radians) { rotateBy({ 0.0f, 0.0f, 1.0f }, radians); }
+
 		Eigen::Matrix4f getTransform() const;
 
 	private:

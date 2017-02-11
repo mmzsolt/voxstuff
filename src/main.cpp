@@ -6,12 +6,14 @@
 #include <GL/glew.h>
 #include "gfx/scene.hpp"
 #include "gfx/object.hpp"
+#include "gfx/node.hpp"
 
 SDL_Window *mainWindow;
 
 SDL_GLContext mainContext;
 
 gfx::Scene scene;
+gfx::NodePtr node;
 
 // taken from http://headerphile.com/sdl2/opengl-part-1-sdl-opengl-awesome/
 
@@ -96,6 +98,9 @@ void Run()
 
 	while (loop)
 	{
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
 		SDL_Event event;
 
 		while (SDL_PollEvent(&event))
@@ -114,6 +119,10 @@ void Run()
 			}
 		}
 
+		node->setPosition({ -0.5f, 0.0f, 0.0f });
+		node->setScale({ 2.0f, 0.5f, 1.0f });
+		node->rotateAroundX(0.01f);
+		node->rotateAroundZ(0.01f);
 		scene.render();
 
 		SDL_GL_SwapWindow(mainWindow);
@@ -134,7 +143,7 @@ void Load()
 	auto shader = gfx::createShader("../data/shaders/simple.vertex", "../data/shaders/simple.fragment");
 	auto obj = gfx::createCube();
 	obj->setShader(shader);
-	auto node = gfx::createNode();
+	node = gfx::createNode();
 	scene.addNodeAndX(node, obj);
 }
 

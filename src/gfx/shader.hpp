@@ -40,6 +40,13 @@ namespace gfx
 			glUniform1f(location, f);
 		}
 
+		void setUniformM4f(const std::string& name, const float* matrix)
+		{
+			GLint location = glGetUniformLocation(m_shaderProgram, name.c_str());
+			use();
+			glUniformMatrix4fv(location, 1, GL_FALSE, matrix);
+		}
+
 		void setTextureSampler(int samplerIdx, GLuint textureId, const std::string& uniformName)
 		{
 			glActiveTexture(GL_TEXTURE0 + samplerIdx);

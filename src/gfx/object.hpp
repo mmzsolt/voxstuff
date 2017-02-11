@@ -28,6 +28,7 @@ namespace gfx
 		void setVertexCount(int count) { m_vertexCount = count; }
 
 		void setShader(const ShaderPtr& shader) { m_shader = shader; }
+		const ShaderPtr& getShader() const { return m_shader; }
 
 		void render() const;
 

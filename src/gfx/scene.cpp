@@ -64,6 +64,10 @@ void gfx::Scene::render()
 {
 	for (auto& nodeObjPair : m_nodeObjectPairs)
 	{
-		nodeObjPair.second->render();
+		auto& node = nodeObjPair.first;
+		auto& obj = nodeObjPair.second;
+
+		obj->getShader()->setUniformM4f("transform", &(node->getTransform()(0)));
+		obj->render();
 	}
 }
