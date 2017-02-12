@@ -1,8 +1,13 @@
+#include "GL/glew.h"
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "scene.hpp"
 #include "object.hpp"
 #include "node.hpp"
 #include "shader.hpp"
-#include "GL/glew.h"
+#include "camera.hpp"
 
 gfx::ObjectPtr gfx::createCube()
 {
@@ -13,11 +18,21 @@ gfx::ObjectPtr gfx::createCube()
 		0.5f, -0.5f, 0.0f, // Bottom Right
 		-0.5f, -0.5f, 0.0f, // Bottom Left
 		-0.5f, 0.5f, 0.0f, // Top Left 
+		0.5f, 0.5f, 0.5f, // Top Right Back
+		0.5f, -0.5f, 0.5f, // Bottom Right Back
+		-0.5f, -0.5f, 0.5f, // Bottom Left Back
+		-0.5f, 0.5f, 0.5f, // Top Left Back
 	};
 
+	// strange how hard it is to find the index representation of the faces of a cube on the net
 	GLuint indices[] = {
 		0, 1, 3,   // First Triangle
-		1, 2, 3    // Second Triangle
+		1, 2, 3,   // Second Triangle
+		4, 5, 7,   // First Triangle
+		5, 6, 7,   // Second Triangle
+		//0, 1, 4,   // First Triangle
+		//1, 4, 5,
+		2, 3, 7
 	};
 
 
@@ -40,7 +55,7 @@ gfx::ObjectPtr gfx::createCube()
 	glEnableVertexAttribArray(0);
 
 	obj->setVao(VAO);
-	obj->setVertexCount(6);
+	obj->setVertexCount(sizeof(indices));
 
 	glBindVertexArray(0);
 
@@ -62,12 +77,17 @@ gfx::ShaderPtr gfx::createShader(const std::string& vertexShaderPath, const std:
 
 void gfx::Scene::render()
 {
+	Eigen::Matrix4f persp = perspective(static_cast<float>(45.0f * M_PI / 180.0f), 1.0f, 1.0f, 100.0f);
+
+	m_nodeObjectPairs.begin()->second->getShader()->setUniformM4f("persp", &persp(0));
+
 	for (auto& nodeObjPair : m_nodeObjectPairs)
 	{
 		auto& node = nodeObjPair.first;
 		auto& obj = nodeObjPair.second;
 
-		obj->getShader()->setUniformM4f("transform", &(node->getTransform()(0)));
+		Eigen::Matrix4f finalTransform = node->getTransform();
+		obj->getShader()->setUniformM4f("transform", &finalTransform(0));
 		obj->render();
 	}
 }

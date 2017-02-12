@@ -7,6 +7,7 @@
 #include "gfx/scene.hpp"
 #include "gfx/object.hpp"
 #include "gfx/node.hpp"
+#include "gfx/camera.hpp"
 
 SDL_Window *mainWindow;
 
@@ -119,8 +120,7 @@ void Run()
 			}
 		}
 
-		node->setPosition({ -0.5f, 0.0f, 0.0f });
-		node->setScale({ 2.0f, 0.5f, 1.0f });
+		node->setPosition({ 0.0f, 0.0f, -4.0f });
 		node->rotateAroundX(0.01f);
 		node->rotateAroundZ(0.01f);
 		scene.render();
@@ -142,6 +142,12 @@ void Load()
 {
 	auto shader = gfx::createShader("../data/shaders/simple.vertex", "../data/shaders/simple.fragment");
 	auto obj = gfx::createCube();
+	obj->setShader(shader);
+	node = gfx::createNode();
+	node->setPosition({ -5.0f, 0.0f, -20.0f });
+	scene.addNodeAndX(node, obj);
+
+	obj = gfx::createCube();
 	obj->setShader(shader);
 	node = gfx::createNode();
 	scene.addNodeAndX(node, obj);
