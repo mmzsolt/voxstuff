@@ -27,15 +27,11 @@ namespace gfx
 		void setVao(GLuint vao) { m_vao = vao; }
 		void setVertexCount(int count) { m_vertexCount = count; }
 
-		void setShader(const ShaderPtr& shader) { m_shader = shader; }
-		const ShaderPtr& getShader() const { return m_shader; }
-
 		void render() const;
 
 	private:
 		std::string m_name;
 		GLuint m_vao;
-		ShaderPtr m_shader;
 		int m_vertexCount;
 	};
 }

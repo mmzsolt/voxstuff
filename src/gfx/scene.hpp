@@ -1,6 +1,7 @@
 #pragma once
 
 #include "forward.hpp"
+#include "shader.hpp"
 
 namespace gfx
 {
@@ -10,15 +11,18 @@ namespace gfx
 
 	class Scene
 	{
+		typedef std::pair<RenderParams, ObjectPtr> RenderParamsObjectPair;
+		typedef std::vector<RenderParamsObjectPair> RenderParamsObjectPairVec;
+
 	public:
 		Scene() {}
 		~Scene() {}
 		
-		void addNodeAndX(const NodePtr& node, const ObjectPtr& obj) { m_nodeObjectPairs.push_back({ node, obj }); }
+		void addRenderParamsObjectPair(const RenderParams& params, const ObjectPtr& obj) { m_renderParamObjectPairs.push_back({ params, obj }); }
 
 		void render();
 
 	private:
-		NodeObjectPairVec m_nodeObjectPairs;
+		RenderParamsObjectPairVec m_renderParamObjectPairs;
 	};
 }

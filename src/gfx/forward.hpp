@@ -20,9 +20,6 @@ namespace gfx
 	typedef std::shared_ptr<Camera> CameraPtr;
 	typedef std::vector<CameraPtr> CameraPtrVec;
 
-	typedef std::pair<NodePtr, ObjectPtr> NodeObjectPair;
-	typedef std::vector<NodeObjectPair> NodeObjectPairVec;
-
 	class Shader;
 	typedef std::shared_ptr<Shader> ShaderPtr;
 	typedef std::vector<ShaderPtr> ShaderPtrVec;

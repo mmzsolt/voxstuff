@@ -4,6 +4,9 @@
 #include <limits>
 #include <string>
 #include <iostream>
+#include <array>
+
+#include "forward.hpp"
 
 namespace gfx
 {
@@ -63,6 +66,18 @@ namespace gfx
 			glUniformMatrix4fv(location, 1, GL_FALSE, matrix);
 		}
 
+		void setUniform1fv(const std::string& name, const float* values, int count)
+		{
+			GLint location = glGetUniformLocation(m_shaderProgram, name.c_str());
+			if (location == -1)
+			{
+				std::cout << "could not find uniform [" << name << "] in shader" << std::endl;
+				return;
+			}
+			use();
+			glUniform1fv(location, count, values);
+		}
+
 		void setTextureSampler(int samplerIdx, GLuint textureId, const std::string& uniformName)
 		{
 			glActiveTexture(GL_TEXTURE0 + samplerIdx);
@@ -72,5 +87,27 @@ namespace gfx
 
 	private:
 		GLuint m_shaderProgram;
+	};
+
+	class RenderParams
+	{
+	public:
+		RenderParams()
+			: m_shader(nullptr)
+		{}
+
+		void setColor(const std::array<float, 3>& color) { m_color = color; }
+		void setColorUniform(const std::string& name) { m_shader->setUniform1fv(name, &m_color[0], 3); }
+
+		void setShader(const ShaderPtr& shader) { m_shader = shader; }
+		const ShaderPtr& getShader() const { return m_shader; }
+
+		void setNode(const NodePtr& node) { m_node = node; }
+		const NodePtr& getNode() const { return m_node; }
+
+	private:
+		ShaderPtr m_shader;
+		NodePtr m_node;
+		std::array<float, 3> m_color;
 	};
 }

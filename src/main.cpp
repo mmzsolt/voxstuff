@@ -14,7 +14,8 @@ SDL_Window *mainWindow;
 SDL_GLContext mainContext;
 
 gfx::Scene scene;
-gfx::NodePtr node;
+gfx::NodePtr node1;
+gfx::NodePtr node2;
 
 // taken from http://headerphile.com/sdl2/opengl-part-1-sdl-opengl-awesome/
 
@@ -100,7 +101,9 @@ void Run()
 	while (loop)
 	{
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		SDL_Event event;
 
@@ -120,9 +123,10 @@ void Run()
 			}
 		}
 
-		node->setPosition({ 0.0f, 0.0f, -4.0f });
-		node->rotateAroundX(0.01f);
-		node->rotateAroundZ(0.01f);
+		node1->rotateAroundX(0.01f);
+		node1->rotateAroundZ(0.01f);
+		node2->rotateAroundX(0.02f);
+		node2->rotateAroundZ(0.02f);
 		scene.render();
 
 		SDL_GL_SwapWindow(mainWindow);
@@ -142,15 +146,24 @@ void Load()
 {
 	auto shader = gfx::createShader("../data/shaders/simple.vertex", "../data/shaders/simple.fragment");
 	auto obj = gfx::createCube();
-	obj->setShader(shader);
-	node = gfx::createNode();
-	node->setPosition({ -5.0f, 0.0f, -20.0f });
-	scene.addNodeAndX(node, obj);
+
+	gfx::RenderParams params1;
+	params1.setShader(shader);
+	params1.setColor({ 0.9f, 0.2f, 0.7f });
+	node1 = gfx::createNode();
+	node1->setPosition({ -0.1f, 0.0f, -10.0f });
+	params1.setNode(node1);
+	scene.addRenderParamsObjectPair(params1, obj);
 
 	obj = gfx::createCube();
-	obj->setShader(shader);
-	node = gfx::createNode();
-	scene.addNodeAndX(node, obj);
+
+	gfx::RenderParams params2;
+	params2.setShader(shader);
+	params2.setColor({ 0.5f, 0.7f, 0.4f });
+	node2 = gfx::createNode();
+	node2->setPosition({ 0.1f, 0.0f, -10.0f });
+	params2.setNode(node2);
+	scene.addRenderParamsObjectPair(params2, obj);
 }
 
 int SDL_main(int argc, char *argv[])

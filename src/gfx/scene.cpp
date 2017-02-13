@@ -14,25 +14,30 @@ gfx::ObjectPtr gfx::createCube()
 	ObjectPtr obj = std::make_shared<Object>();
 
 	GLfloat vertices[] = {
-		0.5f, 0.5f, 0.0f, // Top Right
-		0.5f, -0.5f, 0.0f, // Bottom Right
-		-0.5f, -0.5f, 0.0f, // Bottom Left
-		-0.5f, 0.5f, 0.0f, // Top Left 
-		0.5f, 0.5f, 0.5f, // Top Right Back
-		0.5f, -0.5f, 0.5f, // Bottom Right Back
-		-0.5f, -0.5f, 0.5f, // Bottom Left Back
-		-0.5f, 0.5f, 0.5f, // Top Left Back
+		0.5f, 0.5f, -0.5f, // Top Right Back
+		0.5f, -0.5f, -0.5f, // Bottom Right Back
+		-0.5f, -0.5f, -0.5f, // Bottom Left Back
+		-0.5f, 0.5f, -0.5f, // Top Left Back
+		0.5f, 0.5f, 0.5f, // Top Right Front
+		0.5f, -0.5f, 0.5f, // Bottom Right Front
+		-0.5f, -0.5f, 0.5f, // Bottom Left Front
+		-0.5f, 0.5f, 0.5f, // Top Left Front
 	};
 
 	// strange how hard it is to find the index representation of the faces of a cube on the net
 	GLuint indices[] = {
-		0, 1, 3,   // First Triangle
-		1, 2, 3,   // Second Triangle
-		4, 5, 7,   // First Triangle
-		5, 6, 7,   // Second Triangle
-		//0, 1, 4,   // First Triangle
-		//1, 4, 5,
-		2, 3, 7
+		0, 1, 3,   
+		1, 2, 3,   
+		4, 5, 7,   
+		5, 6, 7,   
+		0, 1, 4,   
+		1, 4, 5,
+		2, 3, 7,
+		2, 6, 7,
+		0, 4, 7,
+		0, 7, 3,
+		1, 5, 6,
+		1, 6, 2
 	};
 
 
@@ -79,15 +84,17 @@ void gfx::Scene::render()
 {
 	Eigen::Matrix4f persp = perspective(static_cast<float>(45.0f * M_PI / 180.0f), 1.0f, 1.0f, 100.0f);
 
-	m_nodeObjectPairs.begin()->second->getShader()->setUniformM4f("persp", &persp(0));
+	m_renderParamObjectPairs.begin()->first.getShader()->setUniformM4f("persp", &persp(0));
 
-	for (auto& nodeObjPair : m_nodeObjectPairs)
+	for (auto& nodeObjPair : m_renderParamObjectPairs)
 	{
-		auto& node = nodeObjPair.first;
+		auto& renderParams = nodeObjPair.first;
 		auto& obj = nodeObjPair.second;
 
-		Eigen::Matrix4f finalTransform = node->getTransform();
-		obj->getShader()->setUniformM4f("transform", &finalTransform(0));
+		Eigen::Matrix4f finalTransform = renderParams.getNode()->getTransform();
+		renderParams.getShader()->setUniformM4f("transform", &finalTransform(0));
+		renderParams.setColorUniform("objcolor");
+		renderParams.getShader()->use();
 		obj->render();
 	}
 }
