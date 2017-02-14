@@ -1,16 +1,29 @@
 #pragma once
 #include "forward.hpp"
 #include "Eigen/Core"
+#include "Eigen/Geometry"
 
 namespace gfx
 {
 	class Camera
 	{
 	public:
+		static Eigen::Vector3f Up;
 		Camera() {}
 		~Camera() {}
+
+		void setPosition(const Eigen::Vector3f& pos) { m_pos = pos; }
+		const Eigen::Vector3f& getPosition() const { return m_pos; }
+
+		void setTarget(const Eigen::Vector3f& tgt) { m_target = tgt; }
+		const Eigen::Vector3f& getTarget() const { return m_target; }
+
+		void move(const Eigen::Vector3f& diff);
+		void rotate(const Eigen::Quaternionf& quat);
+
 	private:
 		Eigen::Vector3f m_target;
+		Eigen::Vector3f m_pos;
 	};
 
 	// from http://spointeau.blogspot.ro/2013/12/hello-i-am-looking-at-opengl-3.html

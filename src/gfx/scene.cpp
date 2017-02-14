@@ -73,6 +73,12 @@ gfx::NodePtr gfx::createNode()
 	return node;
 }
 
+gfx::CameraPtr gfx::createCamera()
+{
+	CameraPtr cam = std::make_shared<Camera>();
+	return cam;
+}
+
 gfx::ShaderPtr gfx::createShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 {
 	ShaderPtr shader = std::make_shared<Shader>();
@@ -83,6 +89,10 @@ gfx::ShaderPtr gfx::createShader(const std::string& vertexShaderPath, const std:
 void gfx::Scene::render()
 {
 	Eigen::Matrix4f persp = perspective(static_cast<float>(45.0f * M_PI / 180.0f), 1.0f, 1.0f, 100.0f);
+
+	Eigen::Matrix4f look = lookAt(m_primaryCamera->getTarget(), m_primaryCamera->getPosition(), { 0.0f, 1.0f, 0.0f });
+
+	persp *= look;
 
 	m_renderParamObjectPairs.begin()->first.getShader()->setUniformM4f("persp", &persp(0));
 

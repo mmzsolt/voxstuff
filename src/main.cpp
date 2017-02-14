@@ -2,6 +2,7 @@
 #include "vox.hpp"
 #include <iostream>
 #include "SDL.h"
+#include "SDL_mouse.h"
 
 #include <GL/glew.h>
 #include "gfx/scene.hpp"
@@ -16,6 +17,7 @@ SDL_GLContext mainContext;
 gfx::Scene scene;
 gfx::NodePtr node1;
 gfx::NodePtr node2;
+float cameraSpeed = 0.03f;
 
 // taken from http://headerphile.com/sdl2/opengl-part-1-sdl-opengl-awesome/
 
@@ -119,8 +121,30 @@ void Run()
 				case SDLK_ESCAPE:
 					loop = false;
 					break;
+				case SDLK_w:
+					scene.getPrimaryCamera()->move({ 0.0f, 0.0f, -1.0f * cameraSpeed });
+					break;
+				case SDLK_s:
+					scene.getPrimaryCamera()->move({ 0.0f, 0.0f, 1.0f * cameraSpeed });
+					break;
+				case SDLK_a:
+					scene.getPrimaryCamera()->move({ -1.0f * cameraSpeed, 0.0f, 0.0f });
+					break;
+				case SDLK_d:
+					scene.getPrimaryCamera()->move({ 1.0f * cameraSpeed, 0.0f, 0.0f });
+					break;
 				}
 			}
+
+			/*
+			if (event.type == SDL_MOUSEMOTION)
+			{
+				Eigen::Quaternionf quat;
+				quat = Eigen::AngleAxisf(0.003f * event.motion.xrel, gfx::Camera::Up);
+				scene.getPrimaryCamera()->rotate(quat);
+				std::cout << event.motion.xrel << std::endl;
+			}
+			*/
 		}
 
 		node1->rotateAroundX(0.01f);
@@ -164,6 +188,11 @@ void Load()
 	node2->setPosition({ 0.1f, 0.0f, -10.0f });
 	params2.setNode(node2);
 	scene.addRenderParamsObjectPair(params2, obj);
+
+	auto camera = gfx::createCamera();
+	camera->setPosition({ 0.0f, 0.0f, 0.0f });
+	camera->setTarget({ 0.0f, 0.0f, 1.0f });
+	scene.setPrimaryCamera(camera);
 }
 
 int SDL_main(int argc, char *argv[])

@@ -7,6 +7,7 @@ namespace gfx
 {
 	ObjectPtr createCube();
 	NodePtr createNode();
+	CameraPtr createCamera();
 	ShaderPtr createShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 
 	class Scene
@@ -22,7 +23,11 @@ namespace gfx
 
 		void render();
 
+		void setPrimaryCamera(const CameraPtr& cam) { m_primaryCamera = cam; }
+		const CameraPtr& getPrimaryCamera() const { return m_primaryCamera; }
+
 	private:
 		RenderParamsObjectPairVec m_renderParamObjectPairs;
+		CameraPtr m_primaryCamera;
 	};
 }
