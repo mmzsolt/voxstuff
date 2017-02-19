@@ -81,6 +81,8 @@ bool Init()
 
 	mainContext = SDL_GL_CreateContext(mainWindow);
 
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
 	SetOpenGLAttributes();
 
 	// This makes our buffer swap syncronized with the monitor's vertical refresh
@@ -135,16 +137,15 @@ void Run()
 					break;
 				}
 			}
-
-			/*
+		
 			if (event.type == SDL_MOUSEMOTION)
 			{
 				Eigen::Quaternionf quat;
 				quat = Eigen::AngleAxisf(0.003f * event.motion.xrel, gfx::Camera::Up);
+				quat = quat * Eigen::AngleAxisf(0.003f * event.motion.yrel, Eigen::Vector3f(1.0f, 0.0f, 0.0f));
 				scene.getPrimaryCamera()->rotate(quat);
-				std::cout << event.motion.xrel << std::endl;
 			}
-			*/
+			
 		}
 
 		node1->rotateAroundX(0.01f);
