@@ -9,6 +9,7 @@
 #include "gfx/object.hpp"
 #include "gfx/node.hpp"
 #include "gfx/camera.hpp"
+#include "vox.hpp"
 
 SDL_Window *mainWindow;
 
@@ -194,6 +195,8 @@ void Load()
 	camera->setPosition({ 0.0f, 0.0f, 0.0f });
 	camera->setTarget({ 0.0f, 0.0f, 1.0f });
 	scene.setPrimaryCamera(camera);
+
+	data::loadVoxel("../data/vox/monu0.vox");
 }
 
 int SDL_main(int argc, char *argv[])
