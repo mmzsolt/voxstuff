@@ -9,11 +9,13 @@
 #include "shader.hpp"
 #include "camera.hpp"
 
+#include <vector>
+
 gfx::ObjectPtr gfx::createCube()
 {
 	ObjectPtr obj = std::make_shared<Object>();
 
-	GLfloat vertices[] = {
+	std::vector<GLfloat> vertices = {
 		0.5f, 0.5f, -0.5f, // Top Right Back
 		0.5f, -0.5f, -0.5f, // Bottom Right Back
 		-0.5f, -0.5f, -0.5f, // Bottom Left Back
@@ -25,7 +27,7 @@ gfx::ObjectPtr gfx::createCube()
 	};
 
 	// strange how hard it is to find the index representation of the faces of a cube on the net
-	GLuint indices[] = {
+	std::vector<GLuint> indices = {
 		0, 1, 3,   
 		1, 2, 3,   
 		4, 5, 7,   
@@ -41,28 +43,16 @@ gfx::ObjectPtr gfx::createCube()
 	};
 
 
-	GLuint VAO;
-	glGenVertexArrays(1, &VAO);
+	VertexAttribDescriptionVec desc;
+	desc.push_back({ GL_FLOAT, 3 });
 
-	glBindVertexArray(VAO);
+	auto VAO = createVAO(vertices, indices, desc);
 
-	GLuint VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	GLuint EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(GLfloat), 0);
-	glEnableVertexAttribArray(0);
-
-	obj->setVao(VAO);
-	obj->setVertexCount(sizeof(indices));
-
-	glBindVertexArray(0);
+	if (VAO)
+	{
+		obj->setVao(*VAO);
+		obj->setVertexCount(sizeof(indices));
+	}
 
 	return obj;
 }

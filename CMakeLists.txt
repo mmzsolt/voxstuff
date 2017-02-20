@@ -9,6 +9,7 @@ set (CMAKE_CXX_STANDARD 14)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 include_directories( "extern/eigen" )
+include_directories( "src" )
 
 file (GLOB_RECURSE blah RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/*.cpp" "src/*.hpp")
 
