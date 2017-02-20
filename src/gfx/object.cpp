@@ -5,10 +5,10 @@
 
 void gfx::Object::render() const
 {
-	assert(m_vertexCount >= 3);
+	assert(m_indexCount >= 3);
 	assert(m_vao != std::numeric_limits<GLuint>::max());
 
 	glBindVertexArray(m_vao);
-	glDrawElements(GL_TRIANGLES, m_vertexCount, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }

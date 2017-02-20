@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <tuple>
+#include <algorithm>
+#include <iterator>
 
 namespace data
 {
@@ -124,4 +126,36 @@ std::pair<std::vector<data::RawVoxel>, std::vector<char>> data::loadVoxel(const 
 	}
 
 	return ret;
+}
+
+std::pair<std::vector<float>, std::vector<int>> data::convertVoxelsToMeshNaively(const data::RawVoxel& voxel, const data::VoxelPalette& pal)
+{
+	std::vector<float> vertices;
+	std::vector<int> indices;
+
+	vertices.reserve(BoxVertices.size() * voxel.m_voxels.size());
+	indices.reserve(BoxIndices.size() * voxel.m_voxels.size());
+
+
+	for (const auto& v : voxel.m_voxels)
+	{
+		std::transform(BoxVertices.begin(), BoxVertices.end(), std::back_inserter(vertices), [v](float vertex) {
+			static int idx = 0;
+			idx = (idx+1)%3;
+			if (idx == 0)
+			{
+				return vertex + v.z;
+			}
+			else if (idx == 1)
+			{
+				return vertex + v.x;
+			}
+			else
+			{
+				return vertex + v.y;
+			}
+		});
+	}
+
+	return{vertices, indices};
 }

@@ -83,11 +83,11 @@ namespace gfx
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(IndexContainerType::value_type), &(*indices.begin()), GL_STATIC_DRAW);
 		
-		int offset = 0;
+		long long offset = 0;
 		for (GLuint i = 0; i < static_cast<GLuint>(descriptions.size()); ++i)
 		{
 			const auto& desc = descriptions[i];
-			glVertexAttribPointer(i, desc.count, desc.type, false, desc.count * desc.getSizeInBytes(),reinterpret_cast<void*>(offset));
+			glVertexAttribPointer(i, desc.count, desc.type, false, desc.count * desc.getSizeInBytes(), reinterpret_cast<void*>(offset));
 			glEnableVertexAttribArray(i);
 			offset += desc.count * desc.getSizeInBytes();
 		}
@@ -103,7 +103,7 @@ namespace gfx
 	public:
 		Object()
 			: m_vao(std::numeric_limits<GLuint>::max())
-			, m_vertexCount(0)
+			, m_indexCount(0)
 		{}
 
 		~Object()
@@ -118,13 +118,13 @@ namespace gfx
 		const std::string& getName() const { return m_name; }
 
 		void setVao(GLuint vao) { m_vao = vao; }
-		void setVertexCount(int count) { m_vertexCount = count; }
+		void setIndexCount(int count) { m_indexCount = count; }
 
 		void render() const;
 
 	private:
 		std::string m_name;
 		GLuint m_vao;
-		int m_vertexCount;
+		int m_indexCount;
 	};
 }

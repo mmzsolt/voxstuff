@@ -196,7 +196,8 @@ void Load()
 	camera->setTarget({ 0.0f, 0.0f, 1.0f });
 	scene.setPrimaryCamera(camera);
 
-	data::loadVoxel("../data/vox/monu0.vox");
+	auto voxels = data::loadVoxel("../data/vox/monu0.vox");
+	auto voxmesh = data::convertVoxelsToMeshNaively(voxels.first[0], voxels.second);
 }
 
 int SDL_main(int argc, char *argv[])

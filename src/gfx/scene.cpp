@@ -8,6 +8,7 @@
 #include "node.hpp"
 #include "shader.hpp"
 #include "camera.hpp"
+#include "vox.hpp"
 
 #include <vector>
 
@@ -15,43 +16,15 @@ gfx::ObjectPtr gfx::createCube()
 {
 	ObjectPtr obj = std::make_shared<Object>();
 
-	std::vector<GLfloat> vertices = {
-		0.5f, 0.5f, -0.5f, // Top Right Back
-		0.5f, -0.5f, -0.5f, // Bottom Right Back
-		-0.5f, -0.5f, -0.5f, // Bottom Left Back
-		-0.5f, 0.5f, -0.5f, // Top Left Back
-		0.5f, 0.5f, 0.5f, // Top Right Front
-		0.5f, -0.5f, 0.5f, // Bottom Right Front
-		-0.5f, -0.5f, 0.5f, // Bottom Left Front
-		-0.5f, 0.5f, 0.5f, // Top Left Front
-	};
-
-	// strange how hard it is to find the index representation of the faces of a cube on the net
-	std::vector<GLuint> indices = {
-		0, 1, 3,   
-		1, 2, 3,   
-		4, 5, 7,   
-		5, 6, 7,   
-		0, 1, 4,   
-		1, 4, 5,
-		2, 3, 7,
-		2, 6, 7,
-		0, 4, 7,
-		0, 7, 3,
-		1, 5, 6,
-		1, 6, 2
-	};
-
-
 	VertexAttribDescriptionVec desc;
 	desc.push_back({ GL_FLOAT, 3 });
 
-	auto VAO = createVAO(vertices, indices, desc);
+	auto VAO = createVAO(data::BoxVertices, data::BoxIndices, desc);
 
 	if (VAO)
 	{
 		obj->setVao(*VAO);
-		obj->setVertexCount(sizeof(indices));
+		obj->setIndexCount(data::BoxIndices.size());
 	}
 
 	return obj;
