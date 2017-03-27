@@ -18,6 +18,7 @@ SDL_GLContext mainContext;
 gfx::Scene scene;
 gfx::NodePtr node1;
 gfx::NodePtr node2;
+gfx::NodePtr node3;
 float cameraSpeed = 0.03f;
 
 // taken from http://headerphile.com/sdl2/opengl-part-1-sdl-opengl-awesome/
@@ -149,10 +150,21 @@ void Run()
 			
 		}
 
-		node1->rotateAroundX(0.01f);
-		node1->rotateAroundZ(0.01f);
-		node2->rotateAroundX(0.02f);
-		node2->rotateAroundZ(0.02f);
+		if (node1)
+		{
+			node1->rotateAroundX(0.01f);
+			node1->rotateAroundZ(0.01f);
+		}
+		if (node2)
+		{
+			node2->rotateAroundX(0.02f);
+			node2->rotateAroundZ(0.02f);
+		}
+		if (node3)
+		{
+			node3->rotateAroundX(0.01f);
+			node3->rotateAroundZ(0.01f);
+		}
 		scene.render();
 
 		SDL_GL_SwapWindow(mainWindow);
@@ -171,6 +183,7 @@ void Cleanup()
 void Load()
 {
 	auto shader = gfx::createShader("../data/shaders/simple.vertex", "../data/shaders/simple.fragment");
+	
 	auto obj = gfx::createCube();
 
 	gfx::RenderParams params1;
@@ -196,8 +209,21 @@ void Load()
 	camera->setTarget({ 0.0f, 0.0f, 1.0f });
 	scene.setPrimaryCamera(camera);
 
+	shader = gfx::createShader("../data/shaders/voxel.vertex", "../data/shaders/voxel.fragment");
 	auto voxels = data::loadVoxel("../data/vox/monu0.vox");
 	auto voxmesh = data::convertVoxelsToMeshNaively(voxels.first[0], voxels.second);
+	
+	gfx::VertexAttribDescriptionVec desc;
+	desc.push_back({ GL_FLOAT, 3 });
+	desc.push_back({ GL_FLOAT, 3 });
+
+	obj = gfx::createObject(voxmesh.first, voxmesh.second, desc);
+	gfx::RenderParams params3;
+	params3.setShader(shader);
+	node3 = gfx::createNode();
+	node3->setPosition({ 0.0f, 0.0f, -100.0f });
+	params3.setNode(node3);
+	scene.addRenderParamsObjectPair(params3, obj);
 }
 
 int SDL_main(int argc, char *argv[])

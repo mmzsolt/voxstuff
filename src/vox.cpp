@@ -26,9 +26,9 @@ namespace data
 	}
 }
 
-std::pair<std::vector<data::RawVoxel>, std::vector<char>> data::loadVoxel(const std::string& filename)
+std::pair<std::vector<data::RawVoxel>, data::VoxelPalette> data::loadVoxel(const std::string& filename)
 {
-	std::pair<std::vector<data::RawVoxel>, std::vector<char>> ret;
+	std::pair<std::vector<RawVoxel>, VoxelPalette> ret;
 
 	std::ifstream file;
 	file.open(filename, std::ios::in | std::ios::binary);
@@ -128,33 +128,40 @@ std::pair<std::vector<data::RawVoxel>, std::vector<char>> data::loadVoxel(const 
 	return ret;
 }
 
-std::pair<std::vector<float>, std::vector<int>> data::convertVoxelsToMeshNaively(const data::RawVoxel& voxel, const data::VoxelPalette& pal)
+std::pair<std::vector<float>, std::vector<int>> data::convertVoxelsToMeshNaively(const data::RawVoxel& model, const data::VoxelPalette& pal)
 {
 	std::vector<float> vertices;
 	std::vector<int> indices;
+	
+	float centerPos[3] = { model.m_sizeX / 2.0f, model.m_sizeY / 2.0f, model.m_sizeZ / 2.0f };
 
-	vertices.reserve(BoxVertices.size() * voxel.m_voxels.size());
-	indices.reserve(BoxIndices.size() * voxel.m_voxels.size());
+	vertices.reserve(2 * BoxVertices.size() * model.m_voxels.size());
+	indices.reserve(BoxIndices.size() * model.m_voxels.size());
 
-
-	for (const auto& v : voxel.m_voxels)
+	int indexBase = 0;
+	// for every little voxel
+	for (const auto& voxel : model.m_voxels)
 	{
-		std::transform(BoxVertices.begin(), BoxVertices.end(), std::back_inserter(vertices), [v](float vertex) {
-			static int idx = 0;
-			idx = (idx+1)%3;
-			if (idx == 0)
-			{
-				return vertex + v.z;
-			}
-			else if (idx == 1)
-			{
-				return vertex + v.x;
-			}
-			else
-			{
-				return vertex + v.y;
-			}
-		});
+		// let's make a little cube thingy
+		float voxelPos[3] = { static_cast<float>(voxel.x) - centerPos[0], static_cast<float>(voxel.y) - centerPos[1], static_cast<float>(voxel.z) - centerPos[2] };
+		size_t palIndex = voxel.i * 4;
+		float voxelColor[3] = {pal[palIndex] / 255.0f, pal[palIndex+1] / 255.0f, pal[palIndex+2] / 255.0f};
+
+		// first the little vertices
+		for (size_t i = 0, n = BoxVertices.size(); i < n; i += 3)
+		{
+			vertices.push_back(BoxVertices[i] + voxelPos[0]);
+			vertices.push_back(BoxVertices[i+1] + voxelPos[1]);
+			vertices.push_back(BoxVertices[i+2] + voxelPos[2]);
+
+			// after every vertex comes the color (now)
+			std::copy(&voxelColor[0], &voxelColor[3], std::back_inserter(vertices));
+		}
+
+		// the little indices just need their values added to the current index
+		std::transform(BoxIndices.begin(), BoxIndices.end(), std::back_inserter(indices), [=](auto i) { return i + indexBase; });
+		// after all, we've added 8 vertices
+		indexBase += 8;
 	}
 
 	return{vertices, indices};

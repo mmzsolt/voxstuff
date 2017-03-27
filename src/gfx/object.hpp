@@ -4,6 +4,7 @@
 #include <limits>
 #include <assert.h>
 #include "stuff/optional.hpp"
+#include <numeric>
 
 namespace gfx
 {
@@ -84,10 +85,11 @@ namespace gfx
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(IndexContainerType::value_type), &(*indices.begin()), GL_STATIC_DRAW);
 		
 		long long offset = 0;
-		for (GLuint i = 0; i < static_cast<GLuint>(descriptions.size()); ++i)
+		GLsizei stride = std::accumulate(descriptions.begin(), descriptions.end(), 0, [](GLsizei curr, auto desc) {return curr + (desc.count * desc.getSizeInBytes()); });
+		for (size_t i = 0, n = descriptions.size(); i < n; ++i)
 		{
 			const auto& desc = descriptions[i];
-			glVertexAttribPointer(i, desc.count, desc.type, false, desc.count * desc.getSizeInBytes(), reinterpret_cast<void*>(offset));
+			glVertexAttribPointer(static_cast<GLuint>(i), desc.count, desc.type, false, stride, reinterpret_cast<void*>(offset));
 			glEnableVertexAttribArray(i);
 			offset += desc.count * desc.getSizeInBytes();
 		}

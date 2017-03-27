@@ -48,9 +48,9 @@ namespace data
 		1, 6, 2
 	};
 
-	typedef std::vector<char> VoxelPalette;
+	typedef std::vector<unsigned char> VoxelPalette;
 
 	std::pair<std::vector<RawVoxel>, VoxelPalette> loadVoxel(const std::string& filename);
 
-	std::pair<std::vector<float>, std::vector<int>> convertVoxelsToMeshNaively(const RawVoxel& voxel, const VoxelPalette& pal);
+	std::pair<std::vector<float>, std::vector<int>> convertVoxelsToMeshNaively(const RawVoxel& model, const VoxelPalette& pal);
 }

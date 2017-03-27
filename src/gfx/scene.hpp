@@ -2,6 +2,7 @@
 
 #include "forward.hpp"
 #include "shader.hpp"
+#include "object.hpp"
 
 namespace gfx
 {
@@ -9,7 +10,23 @@ namespace gfx
 	NodePtr createNode();
 	CameraPtr createCamera();
 	ShaderPtr createShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+	
+	template <typename VertexContainerType, typename IndexContainerType>
+	ObjectPtr createObject(const VertexContainerType& vertices, const IndexContainerType& indices, const VertexAttribDescriptionVec& descriptions)
+	{
+		ObjectPtr obj = std::make_shared<Object>();
 
+		auto VAO = createVAO(vertices, indices, descriptions);
+
+		if (VAO)
+		{
+			obj->setVao(*VAO);
+			obj->setIndexCount(indices.size());
+		}
+
+		return obj;
+	}
+	
 	class Scene
 	{
 		typedef std::pair<RenderParams, ObjectPtr> RenderParamsObjectPair;

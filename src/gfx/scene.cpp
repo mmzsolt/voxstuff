@@ -14,20 +14,10 @@
 
 gfx::ObjectPtr gfx::createCube()
 {
-	ObjectPtr obj = std::make_shared<Object>();
-
 	VertexAttribDescriptionVec desc;
 	desc.push_back({ GL_FLOAT, 3 });
 
-	auto VAO = createVAO(data::BoxVertices, data::BoxIndices, desc);
-
-	if (VAO)
-	{
-		obj->setVao(*VAO);
-		obj->setIndexCount(data::BoxIndices.size());
-	}
-
-	return obj;
+	return createObject(data::BoxVertices, data::BoxIndices, desc);
 }
 
 gfx::NodePtr gfx::createNode()
@@ -51,23 +41,23 @@ gfx::ShaderPtr gfx::createShader(const std::string& vertexShaderPath, const std:
 
 void gfx::Scene::render()
 {
-	Eigen::Matrix4f persp = perspective(static_cast<float>(45.0f * M_PI / 180.0f), 1.0f, 1.0f, 100.0f);
+	Eigen::Matrix4f persp = perspective(static_cast<float>(45.0f * M_PI / 180.0f), 1.0f, 1.0f, 1000.0f);
 
 	Eigen::Matrix4f look = lookAt(m_primaryCamera->getTarget(), m_primaryCamera->getPosition(), { 0.0f, 1.0f, 0.0f });
 
 	persp *= look;
-
-	m_renderParamObjectPairs.begin()->first.getShader()->setUniformM4f("persp", &persp(0));
 
 	for (auto& nodeObjPair : m_renderParamObjectPairs)
 	{
 		auto& renderParams = nodeObjPair.first;
 		auto& obj = nodeObjPair.second;
 
+		renderParams.getShader()->setUniformM4f("persp", &persp(0));
+
 		Eigen::Matrix4f finalTransform = renderParams.getNode()->getTransform();
-		renderParams.getShader()->setUniformM4f("transform", &finalTransform(0));
-		renderParams.setColorUniform("objcolor");
 		renderParams.getShader()->use();
+		renderParams.getShader()->setUniformM4f("transform", &finalTransform(0));
+		//renderParams.setColorUniform("objcolor");
 		obj->render();
 	}
 }
