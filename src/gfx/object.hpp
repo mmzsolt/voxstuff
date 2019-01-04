@@ -72,7 +72,7 @@ namespace gfx
 		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VertexContainerType::value_type), &(*vertices.begin()), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(typename VertexContainerType::value_type), &(*vertices.begin()), GL_STATIC_DRAW);
 
 		GLuint EBO;
 		glGenBuffers(1, &EBO);
@@ -82,7 +82,7 @@ namespace gfx
 		}
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(IndexContainerType::value_type), &(*indices.begin()), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(typename IndexContainerType::value_type), &(*indices.begin()), GL_STATIC_DRAW);
 		
 		long long offset = 0;
 		GLsizei stride = std::accumulate(descriptions.begin(), descriptions.end(), 0, [](GLsizei curr, auto desc) {return curr + (desc.count * desc.getSizeInBytes()); });

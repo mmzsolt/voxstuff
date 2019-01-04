@@ -1,7 +1,7 @@
 project( voxstuff )
 cmake_minimum_required( VERSION 3.2 )
 
-set(SDL2_PATH "extern/sdl")
+#set(SDL2_PATH "extern/sdl")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${voxstuff_SOURCE_DIR}/cmake")
 
 set (CMAKE_CXX_STANDARD 14)
